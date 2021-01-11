@@ -40,7 +40,7 @@ functions:
     handler: handler.getPosts
     events:
     - http:
-        path: /post/{number}
+        path: /posts/{number}
         method: get
   getPost:
     handler: handler.getPost
