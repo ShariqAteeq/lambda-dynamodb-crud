@@ -1,7 +1,8 @@
 "use strict";
 const AWS = require("aws-sdk");
 const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
-const { v4: uuidv4 } = require("uuid");
+
+const { createPost } = require("./controller/createPost");
 
 const postsTable = process.env.POSTS_TABLE;
 
@@ -18,41 +19,35 @@ function sortByDate(a, b) {
   } else return 1;
 }
 
+
 // create-post
 
-module.exports.createPost = (event, context, callback) => {
-  const reqBody = JSON.parse(event.body);
+module.exports.createPost = async (event, context, callback) => {
+    return createPost(event, context, callback, response)
+}
 
-  if (
-    !reqBody.title ||
-    (reqBody.title.trim() === "" || !reqBody.body) ||
-    reqBody.body.trim() === ""
-  ) {
-    return callback(
-      null,
-      response(400, { error: "Title and Body are required!" })
-    );
-  }
 
-  const post = {
-    id: uuidv4(),
-    createdAt: new Date().toISOString(),
-    userId: 1,
-    title: reqBody.title,
-    body: reqBody.body,
-  };
+// module.exports.createPost = 
 
-  return db
-    .put({
-      TableName: postsTable,
-      Item: post,
-    })
-    .promise()
-    .then(() => {
-      callback(null, response(201, post));
-    })
-    .catch((err) => response(null, response(err.statusCode, err)));
-};
+//   const post = {
+//     id: uuidv4(),
+//     createdAt: new Date().toISOString(),
+//     userId: 1,
+//     title: reqBody.title,
+//     body: reqBody.body,
+//   };
+
+//   return db
+//     .put({
+//       TableName: postsTable,
+//       Item: post,
+//     })
+//     .promise()
+//     .then(() => {
+//       callback(null, response(201, post));
+//     })
+//     .catch((err) => response(null, response(err.statusCode, err)));
+// };
 
 //get all posts
 
@@ -125,7 +120,6 @@ module.exports.updatePost = (event, context, callback) => {
     },
     ReturnValues: 'ALL_NEW'
   };
-  console.log('Updating');
 
   return db
     .update(params)
